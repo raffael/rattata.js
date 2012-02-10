@@ -1,0 +1,7 @@
+
+05.02.2012
+- modified simple model definition to support three (more excactly four) ways to define a model:
+	string,
+	enhanced string with type as prefix,
+	array with two or three elements or
+	object which additionaly can contain an error handler
