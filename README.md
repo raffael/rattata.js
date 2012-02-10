@@ -49,18 +49,18 @@ In this file you have specified the basic setting of your app: you have one mode
 3. Now let's construct the controller. Just create file 'welcome.js' in the '/resources/controllers' folder and paste the following lines:
 	
 	app.controllers.extend('welcome',{
-		isMainController: true,
-		
-		main: function(){
-			app.views.welcomeView.render({}).show();
-		},
-		
-		'click reload': function(){
-			var myFBname = prompt("What's your nickname on facebook?");
-			app.models.facebook.getFullname({id: myFBname}, function(data) { 
-				app.views.welcomeView.render(data).show();
-			});
-		},	
+	isMainController: true,
+	
+	main: function(){
+	app.views.welcomeView.render({}).show();
+	},
+	
+	'click reload': function(){
+	var myFBname = prompt("What's your nickname on facebook?");
+	app.models.facebook.getFullname({id: myFBname}, function(data) { 
+	app.views.welcomeView.render(data).show();
+	});
+	},	
 	});
 	
 The main() function will be executed automatically as soon as the app is being executed, since we've marked the controller as main controller. If we click on a UI element called 'uireload' ('ui' is the UI element prefix), you get prompted for your facebook nickname, which will be used to fetch your fullname.
