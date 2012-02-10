@@ -283,10 +283,11 @@ If the embedded plugins follow the conventions of building rattata plugins and t
 
 property.
 
-## Defining custom rattata plugins ##
-While you can inject any kind of JavaScript file into your app either by embedding it via the ´dependencies´ attribute of your app configuration or by using the ´<script>´ tag in the root HTML document, you can also develop customized rattata plugins which basically extend the app object with new functionality. As an example, there is a plugin to enhance the app object with functionality for mobile applications. For writing new plugins, create a new folder 'rattata.mobile' in the ´plugins´ directory of the rattata framework. Inside the folder, create a new file called 'rattata.mobile.js' and copy'n'pase the content of the 'rattata.pluginTemplate.js' file. This content should be simple enough to understand the principles of building plugins for rattata.
+## Defining custom rattata plugins
+While you can inject any kind of JavaScript file into your app either by embedding it via the ´dependencies´ attribute of your app configuration or by using the ´<script>´ tag in the root HTML document, you can also develop customized rattata plugins which basically extend the app object with new functionality. As an example, there is a plugin to enhance the app object with functionality for mobile applications. For writing new plugins, create a new folder 'rattata.mobile' in the ´plugins´ directory of the rattata framework. Inside the folder, create a new file called 'rattata.mobile.js' and copy'n'pase the content of the 'rattata.pluginTemplate.js' file.
+This introduction should be simple enough to understand the principles of building plugins for rattata.
 
-## Routing ##
+## Routing
 Rattata supports routing for your app so that you can access specific app states from a permalink.
 Every controller is accessible using its name:
 
@@ -308,7 +309,7 @@ So, if you access the app using ´http://yourAppName.com/#/taskList/groceries/ma
 
 ## App configuration ##
 
-
+[...]
 
 ## Conventions ##
 *	The *app.ready()* method defines what happens as soon as all app dependencies have been loaded. You could fade out an loading screen in here, as an example.
