@@ -284,5 +284,48 @@ If the embedded plugins follow the conventions of building rattata plugins and t
 property.
 
 ## Defining custom rattata plugins
-While you can inject any kind of JavaScript file into your app either by embedding it via the ´dependencies´ attribute of your app configuration or by using the ´<script>´ tag in the root HTML document, you can also develop customized rattata plugins which basically extend the app object with new functionality. As an example, there is a plugin to enhance the app object with functionality for mobile applications. For writing new plugins, create a new folder *rattata.mobile* in the ´plugins´ directory of the rattata framework. Inside the folder, create a new file called 'rattata.mobile.js' and copy'n'pase the content of the 'rattata.pluginTemplate.js' file.
+While you can inject any kind of JavaScript file into your app either by embedding it via the *dependencies* attribute of your app configuration or by using the *script* tag in the root HTML document, you can also develop customized rattata plugins which basically extend the app object with new functionality.
+As an example, there is a plugin to enhance the app object with functionality for mobile applications. For writing new plugins, create a new folder *rattata.mobile* in the ´plugins´ directory of the rattata framework. Inside the folder, create a new file called 'rattata.mobile.js' and copy'n'pase the content of the 'rattata.pluginTemplate.js' file.
 This introduction should be simple enough to understand the principles of building plugins for rattata.
+
+## Routing
+Rattata supports routing for your app so that you can access specific app states from a permalink.
+Every controller is accessible using its name:
+
+	http://yourAppName.com/#/helloWorld/parameter1/value1/parameter2/value2
+
+will result in starting the app with the controller *helloWorld* and the input data ´{parameter1: 'value1', parameter2: 'value2'}´, instead of running the main controller.
+You can specify custom routes using the *routing* property of your myAppConfig:
+
+	var myAppConfig = {
+		[...],
+		routing: {
+			'taskList/{taskListName}/maxItems/{maxItems}': taskListController
+		}
+	}
+
+So, if you access the app using ´http://yourAppName.com/#/taskList/groceries/maxItems/12´, the controller *taskListController* will be executed using the specified data.
+
+**Note: Be sure to have some set-up automation running before a controller is run by routing.**
+
+## App configuration ##
+
+[...]
+
+## Conventions ##
+*	The *app.ready()* method defines what happens as soon as all app dependencies have been loaded. You could fade out an loading screen in here, as an example.
+*	The *app.templateDelimiter* defines how to embed JavaScript logic into your view templates. Default is an asteriks, so that you open and close JavaScript tags using <* [...] *> (See jQote2 for details).
+*	You can disable routing and browserHistory by setting the flag *app.enableBrowserHistory* to FALSE.
+*	You can specify the type of data structure (JSON, XML, ...) using the *app.communicationType* value. Default is 'json'.
+*	The *app.serializeData(HTTPtype,dataObject)* can be overwritten in order to specify how data shall be transmitted to the server. Default is Slash notation: ´{property: value}´ will be translated to ´/property/value´.
+*	No Warnings and no Console Loggings will be produced if you alter the *app.usage* to something different to 'dev'.
+
+
+## Code Protection and Live Version ##
+You can protect your code and increase performance by building the app using stealJS. In this process, all your JS and CSS resources will be merged into two files to reduce the number of HTTP requests while loading the app.
+You compress your JS app using the command line tool. Cd to the parent folder of your app folder and run './js yourApp/scripts/build.js'. You'll see the executed code in the Terminal and you'll also see which files are being compressed. If not all of your JS files (models, controllers, libs, etc. – note that views are not compressed!) are listed here, something went wrong.
+To troubleshoot, make sure your JS code is correct. Test your all of your code with JSLinter or something similar and avoid incorrect syntax like obj= { attr1: 'val', }; (note the comma).
+Next, we also encountered some cases where the building process din't succeed in the first attempt but in the second or third. 
+
+## Future plans ##
+*	Support for languages
