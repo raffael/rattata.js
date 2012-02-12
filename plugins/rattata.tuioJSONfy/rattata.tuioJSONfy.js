@@ -72,7 +72,7 @@
 		 * @param	tuioJSONParserOptions		An configuration object for the the tuioJSON Parser object.
 		 * @return	-
 		 */
-		function enableTuioJSON(tuioJSONParserOptions){
+		enableTuioJSON: function(tuioJSONParserOptions){
 			var fixor	= new TWFixor({
 				tuioJSONParser:	new tuioJSONParser(tuioJSONParserOptions)
 			});
