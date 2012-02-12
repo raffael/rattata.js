@@ -3,6 +3,9 @@ It's a very rough MVC architecture built in Javascript for your upcoming web app
 
 * * *
 
+# License
+rattata.js is released under the MIT license (http://en.wikipedia.org/wiki/MIT_License).
+
 # What libraries does Rattata depend on?
 Rattata uses jQuery for coding acceleration, stealJS for resource management & code compression and jQote2 as templating engine.
 
