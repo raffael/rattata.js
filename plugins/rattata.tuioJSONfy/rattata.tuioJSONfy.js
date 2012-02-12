@@ -100,5 +100,5 @@
 		}
 	};
 	
-	app.plugins.define('tuiojSONfy',core);
+	app.plugins.define('tuioJSONfy',core);
 })(app);
