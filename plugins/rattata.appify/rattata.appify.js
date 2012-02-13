@@ -10,8 +10,8 @@
 		fullScreenIsAvailable: function(){
 			this.vendorPrefix = app.utils.getBrowserVendor();
 
-			var vendorSupported = (typeof document[this.vendorPrefix+'CancelFullScreen'] != 'undefined');
-			var nativeSupported	= (typeof document['cancelFullScreen'] != 'undefined');
+			var vendorSupported = (typeof $(app.skeleton)[0][this.vendorPrefix+'RequestFullScreen'] == 'function');
+			var nativeSupported	= (typeof $(app.skeleton)[0]['requestFullScreen'] == 'function');
 			if (!vendorSupported && !nativeSupported) {
 				this.vendorPrefix = null;
 				return false;
@@ -33,8 +33,8 @@
 			if (!this.fullScreenIsAvailable()) return false;
 			else {
 				if (this._currentlyIsInFullScreen) return false;
-				var func = (this.vendorPrefix=='') ? 'requestFullScreen' : this.vendorPrefix+'RequestFullScreen';
-				document.getElementById('app')[func]();
+				var func = (this.vendorPrefix=='') ? 'requestFullScreen' : this.vendorPrefix+'RequestFullScreen';				
+				document.documentElement[func]();
 				this._currentlyIsInFullScreen = true;
 			}
 		},
@@ -47,8 +47,7 @@
 			if (!this.fullScreenIsAvailable) return false;
 			else {
 				var func = (this.vendorPrefix=='') ? 'cancelFullScreen' : this.vendorPrefix+'cancelFullScreen';
-				document[func]();
-				alert('disable');
+				document.documentElement[func]();
 				this._currentlyIsInFullScreen = false;
 			}
 		},

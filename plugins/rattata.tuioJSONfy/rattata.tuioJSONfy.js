@@ -6,7 +6,7 @@
 			var script		= document.createElement('script');
 			script.src		='https://raw.github.com/raffael-me/tuioJSON-Parser/master/enableTuioJSON.tw.git.js';
 			script.type		='text/javascript';
-			script.async		= true;
+			script.async	= true;
 			
 			/**
 			 * append the script

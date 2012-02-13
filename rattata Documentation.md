@@ -44,8 +44,7 @@ The app object is configured in the yourAppName.js file. Every property you add 
 Rattata's basic models are very simple AJAX call wrapper. To define a model, e.g. 'userModel', make a new file called 'userModel.js' (or similar) and append it to the *models* array of your myAppConfig.
 Next, open the userModel.js file and write
 
-	app.models.define('userModel',core);
-
+	app.models.define('userModel', core);
 
 while core is an object to define the model's methods:
 
@@ -54,13 +53,28 @@ while core is an object to define the model's methods:
 		editUserData:	[postUrl,postProcessorHandler]
 	});
 
-while urlString is a simple URL like 'http://api.yourAppName.com/get/user/{id}' or a complex URL like 'GET http://api.yourAppName.com/get/user/{id}'. Complex URLs have a HTTP type prefix in front of the actual URL so that you can define whether you want to use GET, POST, PUT or DELETE while calling the server. Next, as you can see, we can define placeholders right inside the URL definition. You will read more about that below.
+while urlString is a simple URL like 'http://api.yourAppName.com/get/user/{id}' or a complex URL like 'GET http://api.yourAppName.com/get/user/{id}'. Complex URLs have a HTTP type prefix in front of the actual URL so that you can define whether you want to use GET, POST, PUT or DELETE while calling the server.
+Next, as you can see, we can define placeholders right inside the URL definition. You will read more about that below.
 *editUserData* in the example above is the advanced way to define the AJAX call. If you use an array with two elements to define the method, the first entry of the array is either a simple or a complex URL and the second is a post-processing function that will be called as soon as the AJAX result is returned by the server. Use this function to enrich or clean up the AJAX result, but be sure to return it afterwards, e.g.:
 
 	function(userAjaxResult) {
 		userAjaxResult.name = userAjaxResult.firstName + ' ' + userAjaxResult.lastName;
 		return userAjaxResult;
 	}
+The most advanced way to define a model method is by defining an object that contains the four values *type*, *url*, *processor* and *error*:
+
+	app.models.define('userModel',{
+		getCriticalUserData:	{
+			type:		'GET',
+			url:		'http://api.yourAppName.com/get/user/{id}',
+			processor:	function(userAjaxResult) {
+				// (enrichments)
+			},
+			error:		function(a,b,c) {
+				// (error handling)
+			}
+		}
+	});
 
 Rattata automatically transforms both of the two ways to define a model methods into real methods, so that you can later execute them in your controller using
 	app.models.userModel.editUserData(null,function(processedResult){
@@ -217,6 +231,10 @@ Notice the Camel Case notation. You can define what happens as soon as the user 
 	});
 
 Since Rattata relies on jQuery, every event that is defined by jQuery or one of its plugins can be used here. The event object, jQuery passes to the event handlers is available here, too. While you have access to the corresponding DOM element in jQuery using something similar to ´$(this)´, you can access the element using the second (*optional*) parameter *elementObject*.
+If you want to bind multiple events with a selector, you can comma separate the name of the events as follows:
+
+	'click,touchstart creatTask': function(...){...},
+
 **Notice the proper Camel Case notation:** The element is marked using the class **uiCreateTask** while the event handler uses **createTask** as selector, without the prefix. It is this way to force you to seperate CSS classes from JavaScript selector classes.
 (**Note: you can change the UI element prefix by re-defining the 'app.uiBindingPrefix' property**).
 

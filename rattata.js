@@ -113,17 +113,17 @@ var app = {
 	 * Simple Models provide a streamlined way to communicate with a backend or a local file via AJAX requests.
 	 * To build a model, the developer simply provides an object that contains model method names and URL
 	 * that will be called via AJAX. The URL definition can be simple (URL only) or more complex (i.e., it includes
-	 * HTTP type, error handler, processor after succesful data transfer.
-	 * The model can be specified in a simple and in two more complex ways:
+	 * HTTP type, error handler, processor after successful data transfer.
+	 * 	The model can be specified in a simple and in two more complex ways:
 	 * the simple way is to define a model method like this:
 	 * 		get: 'http://api.domain/info/object/{objectId}',
 	 * so that the developer can execute model.get({objectId: 123}, callbackFunction);
-	 * The more complex way is to specify HttpType, Url and processingCallback as array with two elements
+	 * 	The more complex way is to specify HttpType, Url and processingCallback as array with two elements
 	 * where default type is GET if no prefix is given:
 	 * 		get: ['GET http://api.domain/info/object/{objectId}',function(result){result.additionalInfo=123;}];
 	 * The processingCallback will be called before the AJAX callback will be called so that
 	 * the developer can make data enrichments etc. to the AJAX result.
-	 * The most complex way is to define an object that contains the values 'type', 'url', 'processor' and 'error',
+	 * 	The most complex way is to define an object that contains the values 'type', 'url', 'processor' and 'error',
 	 * where processor and error and functions to enrich data resp. handle errors
 	 */
 	models:		{
@@ -163,7 +163,6 @@ var app = {
 					methodName	= keys[i],
 					that		= this;				
 				
-				console.log("resulting model defintiion:", modelDefinition);
 				/**
 				 * developer handler is the callback function
 				 */
@@ -562,16 +561,20 @@ var app = {
 				
 				
 				/**
-				* rebinds the UI elements of a view with the event handlers specified in this controller
+				* Rebinds the UI elements of a view with the event handlers specified in this controller
 				* (this function will be called automatically everytime you render a view)
 				*/
 				rebindUi: function(controller) {
 					/**
-					 * cycle through the attributes of the controller and process those that contain
+					 * Cycle through the attributes of the controller and process those that contain
 					 * a letterspace in their name, which indicates that they define an event-action
-					 * binding matching the pattern '[EVENT] [SELECTOR]'
+					 * binding matching the pattern '[EVENT(S)] [SELECTOR]',
+					 * where EVENT(S) is a comma separated list of event names,
+					 * e.g.:
 					 * 
-					 * important: this is making use of camel case. If your uiBindingPrefix is 'ui'
+					 * 		'touchstart,click closeBox': function(){ ... }
+					 * 
+					 * IMPORTANT: this is making use of camel case. If your uiBindingPrefix is 'ui'
 					 * and you define a CLICK binding for 'myElement', the view DOM has to contain
 					 * a 'uiMyElement'
 					 */
@@ -579,14 +582,15 @@ var app = {
 						if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
 						
 						(function(key){
-							// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case)
+							// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case), where 'ui' is the uiBindingPrefix specified in options
 							var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
-								event		= key.substr(0,key.indexOf(' ')),
+								events		= key.substr(0,key.indexOf(' ')),
 								eventHandler= function(event){
 									controller[key](event,$(this));
 								};
 							
-							$(selector).bind(event, eventHandler);
+							events			= events.split(',');
+							for(var i=0;i<events.length;i++) $(selector).bind(events[i], eventHandler);
 						}(key));
 					}
 				},

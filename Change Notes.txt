@@ -1,7 +1,11 @@
+13.02.2012
+* Modified controller UI binding: You can now bind multiple events to one selector at once using a comma separated list, which is useful, as an example, if you want to bind both 'touchstart' and 'click' to the same handler:
+	'touchstart,click openLoginDialogue': function(event,element) { ... }
+
 
 05.02.2012
-- modified simple model definition to support three (more excactly four) ways to define a model:
-	string,
-	enhanced string with type as prefix,
-	array with two or three elements or
-	object which additionaly can contain an error handler
+* Modified simple model definition to support three (more excactly four) ways to define a model:
+	(1) string,
+	(2) enhanced string with type as prefix,
+	(3) array with two (simple or complex url + processor) or three elements or
+	(4) object which additionaly can contain an error handler (type, url, processor, error)
