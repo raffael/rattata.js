@@ -233,7 +233,7 @@ Notice the Camel Case notation. You can define what happens as soon as the user 
 Since Rattata relies on jQuery, every event that is defined by jQuery or one of its plugins can be used here. The event object, jQuery passes to the event handlers is available here, too. While you have access to the corresponding DOM element in jQuery using something similar to ´$(this)´, you can access the element using the second (*optional*) parameter *elementObject*.
 If you want to bind multiple events with a selector, you can comma separate the name of the events as follows:
 
-	'click,touchstart creatTask': function(...){...},
+	'click,touchstart createTask': function(...){...},
 
 **Notice the proper Camel Case notation:** The element is marked using the class **uiCreateTask** while the event handler uses **createTask** as selector, without the prefix. It is this way to force you to seperate CSS classes from JavaScript selector classes.
 (**Note: you can change the UI element prefix by re-defining the 'app.uiBindingPrefix' property**).
