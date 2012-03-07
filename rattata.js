@@ -150,18 +150,18 @@ var app = {
 					}
 				});
 			
-			for(i=0;i<keys.length;i++) {
+			for(i=0;i<keys.length;i++) (function(i) {
 				/**
 				 * ignore custom model functions the developer has written
 				 */
-				if (typeof core[keys[i]] == 'function') continue;
+				if (typeof core[keys[i]] == 'function') return;
 				
 				/*
 				 * parse the model definition which can be defined in four different ways
 				 */
-				var modelDefinition	= app._parseModelDefinition(core[keys[i]]),
-					methodName	= keys[i],
-					that		= this;				
+				var methodName		= keys[i],
+					that			= this,
+					modelDefinition = app._parseModelDefinition(core[keys[i]]);
 				
 				/**
 				 * developer handler is the callback function
@@ -194,7 +194,8 @@ var app = {
 						}
 					});
 				}
-			}
+			})(i);
+			
 
 			newModel.name = name;
 			this[name]	= newModel;
@@ -578,20 +579,24 @@ var app = {
 					 * and you define a CLICK binding for 'myElement', the view DOM has to contain
 					 * a 'uiMyElement'
 					 */
-					for(var key in controller) {
-						if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
-						
-						(function(key){
-							// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case), where 'ui' is the uiBindingPrefix specified in options
-							var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
-								events		= key.substr(0,key.indexOf(' ')),
-								eventHandler= function(event){
-									controller[key](event,$(this));
-								};
+					if (controller==undefined) {
+						LOG('No controller defined for rebinding the UI');
+					} else {
+						for(var key in controller) {
+							if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
 							
-							events			= events.split(',');
-							for(var i=0;i<events.length;i++) $(selector).bind(events[i], eventHandler);
-						}(key));
+							(function(key){
+								// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case), where 'ui' is the uiBindingPrefix specified in options
+								var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
+									events		= key.substr(0,key.indexOf(' ')),
+									eventHandler= function(event){
+										controller[key](event,$(this));
+									};
+								
+								events			= events.split(',');
+								for(var i=0;i<events.length;i++) $(selector).bind(events[i], eventHandler);
+							}(key));
+						}
 					}
 				},
 				

@@ -1,5 +1,76 @@
-(function(app){
+/**
+ * From:	John Dyer's Code
+ * URL:		http://johndyer.name/native-fullscreen-javascript-api-plus-jquery-plugin/
+ */
+(function() {
+    var
+        fullScreenApi = {
+            supportsFullScreen: false,
+            isFullScreen: function() { return false; },
+            requestFullScreen: function() {},
+            cancelFullScreen: function() {},
+            fullScreenEventName: '',
+            prefix: ''
+        },
+        browserPrefixes = 'webkit moz o ms khtml'.split(' ');
+ 
+    // check for native support
+    if (typeof document.cancelFullScreen != 'undefined') {
+        fullScreenApi.supportsFullScreen = true;
+    } else {
+        // check for fullscreen support by vendor prefix
+        for (var i = 0, il = browserPrefixes.length; i < il; i++ ) {
+            fullScreenApi.prefix = browserPrefixes[i];
+ 
+            if (typeof document[fullScreenApi.prefix + 'CancelFullScreen' ] != 'undefined' ) {
+                fullScreenApi.supportsFullScreen = true;
+ 
+                break;
+            }
+        }
+    }
+ 
+    // update methods to do something useful
+    if (fullScreenApi.supportsFullScreen) {
+        fullScreenApi.fullScreenEventName = fullScreenApi.prefix + 'fullscreenchange';
+ 
+        fullScreenApi.isFullScreen = function() {
+            switch (this.prefix) {
+                case '':
+                    return document.fullScreen;
+                case 'webkit':
+                    return document.webkitIsFullScreen;
+                default:
+                    return document[this.prefix + 'FullScreen'];
+            }
+        }
+        fullScreenApi.requestFullScreen = function(el) {
+            return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
+        }
+        fullScreenApi.cancelFullScreen = function(el) {
+            return (this.prefix === '') ? document.cancelFullScreen() : document[this.prefix + 'CancelFullScreen']();
+        }
+    }
+ 
+    // jQuery plugin
+    if (typeof jQuery != 'undefined') {
+        jQuery.fn.requestFullScreen = function() {
+ 
+            return this.each(function() {
+                if (fullScreenApi.supportsFullScreen) {
+                    fullScreenApi.requestFullScreen(this);
+                }
+            });
+        };
+    }
+ 
+    // export api
+    window.fullScreenApi = fullScreenApi;
+})();
 
+
+
+(function(app){  
 	var core	= {
 	
 		/**
@@ -8,35 +79,19 @@
 		 */
 		vendorPrefix: '',
 		fullScreenIsAvailable: function(){
-			this.vendorPrefix = app.utils.getBrowserVendor();
-
-			var vendorSupported = (typeof $(app.skeleton)[0][this.vendorPrefix+'RequestFullScreen'] == 'function');
-			var nativeSupported	= (typeof $(app.skeleton)[0]['requestFullScreen'] == 'function');
-			if (!vendorSupported && !nativeSupported) {
-				this.vendorPrefix = null;
-				return false;
-			} else {
-				return true;
-			}
+			return fullScreenApi.supportsFullScreen;
 		},
 		
 		/**
 		 * request to enable browser fullscreen mode (only available in modern browsers)
 		 * @return BOOLEAN		TRUE, if request could be sent, else FALSE
 		 */
-		_currentlyIsInFullScreen: false,
 		isInFullScreen: function(){
-			return this._currentlyIsInFullScreen;
+			fullScreenApi.isFullScreen();
 		},
 		
 		enableFullScreen: function(){
-			if (!this.fullScreenIsAvailable()) return false;
-			else {
-				if (this._currentlyIsInFullScreen) return false;
-				var func = (this.vendorPrefix=='') ? 'requestFullScreen' : this.vendorPrefix+'RequestFullScreen';				
-				document.documentElement[func]();
-				this._currentlyIsInFullScreen = true;
-			}
+			fullScreenApi.requestFullScreen(document.documentElement);
 		},
 		
 		/**
@@ -44,12 +99,7 @@
 		 * @return BOOLEAN		TRUE, if request could be sent, else FALSE
 		 */
 		disableFullScreen: function(){
-			if (!this.fullScreenIsAvailable) return false;
-			else {
-				var func = (this.vendorPrefix=='') ? 'cancelFullScreen' : this.vendorPrefix+'cancelFullScreen';
-				document.documentElement[func]();
-				this._currentlyIsInFullScreen = false;
-			}
+			fullScreenApi.cancelFullScreen(document.documentElement);
 		},
 				
 		/**
