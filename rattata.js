@@ -371,7 +371,7 @@ var app = {
 							 * Calling on of these four method will sync the local data with the one
 							 * on the server.
 							 * The developer can inject additional URL parameters into the AJAX url, so that
-							 * it is possible to code model.get({access_token: 'fdgh345g2'});. The injected
+							 * it is possible to code model.read({access_token: 'fdgh345g2'});. The injected
 							 * data will be inserted in the url the user has specified in the 'read' url:
 							 * read: 'GET http://api.domain.com/info/?accesstoken={access_token}.
 							 * Do NOT mix that up with the actual data that will be passed to the server
@@ -563,9 +563,9 @@ var app = {
 				
 				/**
 				* Rebinds the UI elements of a view with the event handlers specified in this controller
-				* (this function will be called automatically everytime you render a view)
+				* (this function will be called automatically everytime you render a view and show() it)
 				*/
-				rebindUi: function(controller) {
+				rebindUi: function() {
 					/**
 					 * Cycle through the attributes of the controller and process those that contain
 					 * a letterspace in their name, which indicates that they define an event-action
@@ -578,25 +578,46 @@ var app = {
 					 * IMPORTANT: this is making use of camel case. If your uiBindingPrefix is 'ui'
 					 * and you define a CLICK binding for 'myElement', the view DOM has to contain
 					 * a 'uiMyElement'
+					 * 
+					 * Custom data can be bind, too:
+					 * 
+					 * 		'customEvent element': function(event,targetElement,customData){ ... }
+					 * 
 					 */
-					if (controller==undefined) {
-						LOG('No controller defined for rebinding the UI');
-					} else {
-						for(var key in controller) {
-							if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
+					var controller = this;
+					for(var key in controller) {
+						if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
+						
+						(function(key){
+							// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case), where 'ui' is the uiBindingPrefix specified in options
+							var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
+								events		= key.substr(0,key.indexOf(' ')),
+								eventHandler= function(event,customData){
+									controller[key](event,$(this),customData);
+								};
 							
-							(function(key){
-								// if you define a 'click sayHello', the UI element has to be 'uiSayHello' (camel case), where 'ui' is the uiBindingPrefix specified in options
-								var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
-									events		= key.substr(0,key.indexOf(' ')),
-									eventHandler= function(event){
-										controller[key](event,$(this));
-									};
-								
-								events			= events.split(',');
-								for(var i=0;i<events.length;i++) $(selector).bind(events[i], eventHandler);
-							}(key));
-						}
+							events			= events.split(',');
+							for(var i=0;i<events.length;i++) $(selector).bind(events[i], eventHandler);
+						}(key));
+					}
+				},
+				
+				/**
+				 * Unbinds all previously binded event handlers of this controller, which can be useful
+				 * to avoid multiple event handler execution.
+				 */
+				unbindUi: function(){
+					var controller = this;
+					for(var key in controller) {
+						if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
+						
+						(function(key){
+							var selector	= app.uiBindingPrefix + key.substr(key.indexOf(' ')+1,1).toUpperCase() + key.substr(key.indexOf(' ')+2),
+								events		= key.substr(0,key.indexOf(' '));
+							
+							events			= events.split(',');
+							for(var i=0;i<events.length;i++) $(selector).unbind(events[i]);
+						}(key));
 					}
 				},
 				
@@ -817,6 +838,8 @@ var app = {
 				break;
 			}
 		}
+		
+		console.log("parsed string ",str,data);
 		return str;
 	},
 	

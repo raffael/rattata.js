@@ -21,7 +21,7 @@
  * 
  */
 (function(app){
-
+	var pubsubReceiverId	= 'rattata-pub-sub-receiver';
 	var core	= {
 		
 		eventReceiver: null,
@@ -35,11 +35,40 @@
 		 */
 		publish: function(eventName, data) {
 			this.eventReceiver.trigger(eventName, data);
+		},
+		
+		/**
+		 * subscribe
+		 * Manually subscribe to a global event. You'd better use the syntax explained in
+		 * the docs above.
+		 * 
+		 * @param	eventName		The name of the event you want to subscribe
+		 * @return	-
+		 */
+		subscribe: function(eventName, handler) {
+			this.eventReceiver.bind(eventName, handler);
+		},
+		
+		/**
+		 * subscribeOnce
+		 * Manually subscribe to a global event. You'd better use the syntax explained in
+		 * the docs above.
+		 * As soon as the subscribed event is fired, the subscription will be removed.
+		 * 
+		 * @param	eventName		The name of the event you want to subscribe
+		 * @return	-
+		 */
+		subscribeOnce: function(eventName, handler) {
+			var self = this;
+			this.eventReceiver.bind(eventName, function(event,data){
+				handler(event,data);
+				self.eventReceiver.unbind(eventName);
+			});
 		}
 	};
 	
-	$('<i style="visibility:hidden;" id="rattata-pubsub-receiver" class="'+app.uiBindingPrefix.replace('.','')+'Global"></i>').appendTo($('body'));
-	core.eventReceiver	= $('#rattata-pubsub-receiver');
+	$('<i style="visibility:hidden;" id="'+pubsubReceiverId+'" class="'+app.uiBindingPrefix.replace('.','')+'Global"></i>').appendTo($('body'));
+	core.eventReceiver	= $('#'+pubsubReceiverId);
 	
 	app.plugins.define('pubsub',core);
 	
