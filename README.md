@@ -7,35 +7,42 @@ It's a very rough MVC architecture built in Javascript for your upcoming web app
 rattata.js is released under the MIT license (http://en.wikipedia.org/wiki/MIT_License).
 
 # What libraries does Rattata depend on?
-Rattata uses jQuery for coding acceleration, stealJS for resource management & code compression and jQote2 as templating engine.
+Rattata.js uses *jQuery* for coding acceleration, *stealJS* for resource management & code compression and *jQote2* as templating engine.
 
 # Sow let's start — how do I begin writing an app?
+Since Rattata.js uses stealJS as resource mananager, structure templates are available as well.
+0. Download Navigate to the stealJS folder of the Rattata.js download using the Terminal.
+1. Run **./js steal/generate/rattataApp MyFirstApp**.A folder *MyFirstApp* will be created automatically with some demo controllers, models and views.
+3. Open *MyFirstApp.js* to start extending the foundation.
+
+# The longer version of creating an app
+Let's have a look at the manual way of instantiating a new Rattata.js based application.
 0. Create a new folder for your app with the following structure:
 	
 	/yourApp
-	  /resources
-	    /js (this is where external JS plugins are stored)
-	    /css (your css files)
-	    /models (your data model descriptions)
-	    /views (your HTML templates)
-	    /controllers (your magical controllers)
+		/resources
+			/js (this is where external JS plugins are stored)
+			/css (your css files)
+			/models (your data model descriptions)
+			/views (your HTML templates)
+			/controllers (your magical controllers)
     
-1. Make a *.js file in the root of your app folder and paste the following lines of code in:
+1. Make a .js file in the root of your app folder and paste the following lines of code in:
 	
 	steal( 'appmvc/appmvc' ).then(function(){
-	  var yourApp = {
+		var yourApp = {
 			dependencies:	['css/base'], // include the css file 'css/base.css'
-			models:			  ['facebook'],
-			views:			  ['welcomeView'],
-			controllers:	['welcome'],
-	    skeleton:		'#app',
+			models:			['facebook'],
+			views:			['welcomeView'],
+			controllers:		['welcome'],
+		skeleton:			'#app',
 		}
 		app.build(yourApp);
 	});
 	
 In this file you have specified the basic setting of your app: you have one model, one view and one controller and all of the HTML goes into the #app div of your DOM.
 
-2. Next, make a *.html file in your app root folder and paste something similiar to the following lines of code:
+2. Next, make a .html file in your app root folder and paste something similiar to the following lines of code:
 	
 	<!doctype html>
 	<html>
