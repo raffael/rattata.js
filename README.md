@@ -11,6 +11,7 @@ Rattata.js uses *jQuery* for coding acceleration, *stealJS* for resource managem
 
 # Sow let's start — how do I begin writing an app?
 Since Rattata.js uses stealJS as resource mananager, structure templates are available as well.
+
 0. Download Navigate to the stealJS folder of the Rattata.js download using the Terminal.
 1. Run **./js steal/generate/rattataApp MyFirstApp**.A folder *MyFirstApp* will be created automatically with some demo controllers, models and views.
 3. Open *MyFirstApp.js* to start extending the foundation.
