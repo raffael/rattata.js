@@ -48,17 +48,17 @@ In this file you have specified the basic setting of your app: you have one mode
 
 3. Next, make a .html file in your app root folder and paste something similiar to the following lines of code:
 	
-	´<code><!doctype html>
-	<html>
-	  <head>
-		</head>
-		<body>
-			<h1>This is a Rattata.js based application</h1>
-	        <div id="app"></div>
-			<script type="text/javascript" src="../steal/steal.js?appmvcdemo/appmvcdemo.js">
-	        </script>
-		</body>
-	</html></code>´
+	&lt;!doctype html&gt;
+	&lt;html&gt;
+	  &lt;head&gt;
+		&lt;/head&gt;
+		&lt;body&gt;
+			&lt;h1&gt;This is a Rattata.js based application&lt;/h1&gt;
+	        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+			&lt;script type=&quot;text/javascript&quot; src=&quot;../steal/steal.js?appmvcdemo/appmvcdemo.js&quot;&gt;
+	        &lt;/script&gt;
+		&lt;/body&gt;
+	&lt;/html&gt;
 
 4. Now let's construct the controller. Just create file 'welcome.js' in the '/resources/controllers' folder and paste the following lines:
 	
