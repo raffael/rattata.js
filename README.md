@@ -53,20 +53,20 @@ In this file you have specified the basic setting of your app: you have one mode
 3. Next, make a .html file in your app root folder and paste something similiar to the following lines of code:
 	
 ```html
-	&lt;!doctype html&gt;
-	&lt;html&gt;
-	  &lt;head&gt;
-		&lt;/head&gt;
-		&lt;body&gt;
-			&lt;h1&gt;This is a Rattata.js based application&lt;/h1&gt;
-	        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
-			&lt;script type=&quot;text/javascript&quot; src=&quot;../steal/steal.js?appmvcdemo/appmvcdemo.js&quot;&gt;
-	        &lt;/script&gt;
-		&lt;/body&gt;
-	&lt;/html&gt;
+<!doctype html>
+	<html>
+	  <head>
+		</head>
+		<body>
+			<h1>This is a Rattata.js based application</h1>
+	        <div id="app"></div>
+			<script type="text/javascript" src="../steal/steal.js?appmvcdemo/appmvcdemo.js">
+	        </script>
+		</body>
+	</html>
 ```
 
-4. Now let's construct the controller. Just create file 'welcome.js' in the '/resources/controllers' folder and paste the following lines:
+4. Now let's construct a controller. Just create a file *welcome.js* in the */resources/controllers* folder and paste the following lines:
 	
 ```javascript
 app.controllers.extend('welcome',{
@@ -85,7 +85,7 @@ app.controllers.extend('welcome',{
    });´
 ```
 
-The main() function will be executed automatically as soon as the app is being executed, since we've marked the controller as main controller. If we click on a UI element called 'uireload' ('ui' is the UI element prefix), you get prompted for your facebook nickname, which will be used to fetch your fullname.
+The main() function will be executed automatically as soon as the app is being executed, since we've marked the controller as main controller. If we click on a UI element with a class called 'uiReload' ('ui' is the UI element prefix to separate CSS classes from UI classes), you get prompted for your facebook nickname, which will be used to fetch your fullname.
 
 5. Let's build our model 'facebook'. Make a file 'facebook.js' in your '/resources/models' folder:
 	
@@ -98,14 +98,18 @@ app.models.extend('facebook',{
 });
 ```
 	
-Here, we're creating a new model named 'facebook' and specify one method called 'getFullname' which gets its data from via GET from the social graph using the parameter {id} of our controller. The optional function defines a data enrichment to post-process the data result. In this case, we are synthetically creating a new property 'fullname' using the first_ and last_name properties.
+Here, we're creating a new model named 'facebook' and specify one method called 'getFullname' which gets its data via GET from the social graph using the parameter {id} given by our controller. The optional function defines a data enrichment operation to post-process the AJAX data result. In this case, we are synthetically creating a new property 'fullname' using the first_ and last_name properties.
 
 6. And now, we're creating the view: Make a file 'welcomeView.html' in the right folder and paste the following lines:
 	
 ```html
    <h2>Hello World<*= (this.fullname!=null) ? ', '+this.fullname : '' *></h2>
 	<p>Click on the button below to get a personalized Welcome message.</p>
-	<button class="uireload">Give me a personalized Welcome message, please!</button>´
+	<button class="uiReload">Give me a personalized Welcome message, please!</button>´
 ```
+
+You see: Rattata.js views *do* contain logic. All data being passed to a view is available via the *this* reference.
+
+7. Run the app from file:/// since we're AJAX requesting to a foreign URL.
 
 That's it. Nice, huh?
