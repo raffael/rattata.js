@@ -3,7 +3,9 @@
 When we built Rattata.js, we were first building an application based on it before implementing the actual underlying framework. Step by step, we could watch the application becoming alive.
 It's a rough MVC architecture built in JavaScript for your upcoming web app.
 
-## Sow let's start — how do I begin writing an app?
+Rattata.js is still under development. Feel free to contribute and share your thoughts.
+
+## So let's start — how do I begin writing an app?
 Since Rattata.js uses stealJS as resource mananager, structure templates to generate the foundation files are available as well.
 
 0. Download Navigate to the stealJS folder of the Rattata.js download using the Terminal.
