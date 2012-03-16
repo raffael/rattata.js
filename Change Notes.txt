@@ -1,4 +1,14 @@
 13.02.2012
+* Introduced the extend() method to extend existing controllers. You can use it just as you are used to define new controllers:
+
+	app.controllers.extend('existingController', {
+		newMethod: function(){},
+		'click refresh': function(){
+			// new binding
+		}
+	});
+
+13.02.2012
 * Modified controller UI binding: You can now bind multiple events to one selector at once using a comma separated list, which is useful, as an example, if you want to bind both 'touchstart' and 'click' to the same handler:
 	'touchstart,click openLoginDialogue': function(event,element) { ... }
 
