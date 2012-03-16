@@ -2,6 +2,12 @@
 
 	var core	= {
 	
+		/**
+		 * loadTuioJSON
+		 * Loads the latest version of the tuioJSON files from github using the enableTuioJSON file,
+		 * which loads both the TWFixor Filter and the tuioJSON Parser. As soon as both files are loaded,
+		 * the WebSocket will be initiated.
+		 */
 		loadTuioJSON: function(){
 			var script		= document.createElement('script');
 			script.src		='https://raw.github.com/raffael-me/tuioJSON-Parser/master/enableTuioJSON.tw.git.js';

@@ -343,8 +343,8 @@ var app = {
 				}
 				
 				/**
-				 * In order to make this object able to be output via alert(), define
-				 * the toString method
+				 * In order to make this object able to be output via alert(), re-define
+				 * the toString method to enforce the developer to use extractData()
 				 */
 				this.toString 		= function(){
 					return 'Please use the extractData() method on observed models to output its content via the console or alert()';
@@ -657,6 +657,19 @@ var app = {
 			app._registerControllerInRouting(this[name],optionalInputParameters);
 
 			LOG("created new controller called '"+name+"'");
+		},
+		
+		/**
+		 * call app.controllers.extend(coreName,coreDefinition) in an external file to extend an existing (!) controller
+		 */
+		extend: function(name, core, optionalInputParameters){
+			var tmp_name	= name+'_'+new Date()/1;
+
+			app.controllers.define(tmp_name, core, optionalInputParameters);
+			$.extend(app.controllers[name], app.controllers[tmp_name]);
+			delete app.controllers[tmp_name];
+
+			LOG("extended controller called '"+name+"'");
 		}
 	},
 	
@@ -751,14 +764,10 @@ var app = {
 					case (ext=='less'):
 						steal.less('resources/'+files[i]); break;
 					case (ext=='http:'): 
-						alert('http request not supported yet. Please embed via HTML dom.');
+						alert('http request not supported yet. Please embed them manually in your HTML file.');
 						break;
-						
 					case (ext=='plugins'):
-						
 						steal.plugins('rattata/'+files[i]); break;
-						
-						//steal.plugins('resources/'+files[i]); break;
 				}
 			}
 			
@@ -1010,10 +1019,10 @@ function LOG(str) {
 	if (app.usage!='dev') return;
 	if (arguments.length>1) {
 		switch(arguments.length) {
-			case 2: console.log('stealJS INFO:'+arguments[0],arguments[1]); break;
-			case 3: console.log('stealJS INFO:'+arguments[0],arguments[1],arguments[2]); break;
-			case 4: console.log('stealJS INFO:'+arguments[0],arguments[1],arguments[2],arguments[3]); break;
-			case 5: console.log('stealJS INFO:'+arguments[0],arguments[1],arguments[2],arguments[3],arguments[4]); break;			
+			case 2: console.log('steal.js INFO:'+arguments[0],arguments[1]); break;
+			case 3: console.log('steal.js INFO:'+arguments[0],arguments[1],arguments[2]); break;
+			case 4: console.log('steal.js INFO:'+arguments[0],arguments[1],arguments[2],arguments[3]); break;
+			case 5: console.log('steal.js INFO:'+arguments[0],arguments[1],arguments[2],arguments[3],arguments[4]); break;			
 		}	
 	} else {
 		steal.dev.log(str);
