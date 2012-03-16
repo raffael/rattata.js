@@ -40,7 +40,7 @@ steal( 'appmvc/appmvc' ).then(function(){
 });
 ```
 	
-This is acts as the bootstrap file. Here, you have specified the basic setting of your app: you have one model, one view and one controller and all of the HTML goes into the #app div of your DOM.
+This acts as the bootstrap file. Here, you have specified the basic setting of your app: you have one model, one view and one controller and all of the HTML goes into the #app div of your DOM.
 
 Next, **make a .html file** in your app root folder and paste something similiar to the following lines of code:
 	
