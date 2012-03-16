@@ -1,6 +1,7 @@
 # What is Rattata.js
-	When we built Rattata.js, we were first building an application based on it before implementing the actual underlying framework. Step by step, we could watch the application becoming alive.
-It's a very rough MVC architecture built in Javascript for your upcoming web app.
+
+When we built Rattata.js, we were first building an application based on it before implementing the actual underlying framework. Step by step, we could watch the application becoming alive.
+It's a rough MVC architecture built in JavaScript for your upcoming web app.
 
 * * *
 
@@ -11,7 +12,7 @@ rattata.js is released under the MIT license (http://en.wikipedia.org/wiki/MIT_L
 Rattata.js uses *jQuery* for coding acceleration, *stealJS* for resource management & code compression and *jQote2* as templating engine.
 
 # Sow let's start — how do I begin writing an app?
-Since Rattata.js uses stealJS as resource mananager, structure templates are available as well.
+Since Rattata.js uses stealJS as resource mananager, structure templates to generate the foundation files are available as well.
 
 0. Download Navigate to the stealJS folder of the Rattata.js download using the Terminal.
 1. Run **./js steal/generate/rattataApp MyFirstApp**.A folder *MyFirstApp* will be created automatically with some demo controllers, models and views.
@@ -20,7 +21,7 @@ Since Rattata.js uses stealJS as resource mananager, structure templates are ava
 # The longer version of creating an app
 Let's have a look at the manual way of instantiating a new Rattata.js based application.
 
-0. Create a new folder for your app with the following structure:
+1. Create a new folder for your app with the following structure:
 	
 	´/yourApp
 		/resources
@@ -30,7 +31,7 @@ Let's have a look at the manual way of instantiating a new Rattata.js based appl
 			/views (your HTML templates)
 			/controllers (your magical controllers)´
     
-1. Make a .js file in the root of your app folder and paste the following lines of code in:
+2. Make a .js file in the root of your app folder and paste the following lines of code in:
 	
 	´steal( 'appmvc/appmvc' ).then(function(){
 		var yourApp = {
@@ -45,9 +46,9 @@ Let's have a look at the manual way of instantiating a new Rattata.js based appl
 	
 In this file you have specified the basic setting of your app: you have one model, one view and one controller and all of the HTML goes into the #app div of your DOM.
 
-2. Next, make a .html file in your app root folder and paste something similiar to the following lines of code:
+3. Next, make a .html file in your app root folder and paste something similiar to the following lines of code:
 	
-	´<!doctype html>
+	´<code><!doctype html>
 	<html>
 	  <head>
 		</head>
@@ -57,9 +58,9 @@ In this file you have specified the basic setting of your app: you have one mode
 			<script type="text/javascript" src="../steal/steal.js?appmvcdemo/appmvcdemo.js">
 	        </script>
 		</body>
-	</html>´
+	</html></code>´
 
-3. Now let's construct the controller. Just create file 'welcome.js' in the '/resources/controllers' folder and paste the following lines:
+4. Now let's construct the controller. Just create file 'welcome.js' in the '/resources/controllers' folder and paste the following lines:
 	
 	´app.controllers.extend('welcome',{
 		isMainController: true,
@@ -78,7 +79,7 @@ In this file you have specified the basic setting of your app: you have one mode
 	
 The main() function will be executed automatically as soon as the app is being executed, since we've marked the controller as main controller. If we click on a UI element called 'uireload' ('ui' is the UI element prefix), you get prompted for your facebook nickname, which will be used to fetch your fullname.
 
-4. Let's build our model 'facebook'. Make a file 'facebook.js' in your '/resources/models' folder:
+5. Let's build our model 'facebook'. Make a file 'facebook.js' in your '/resources/models' folder:
 	
 	´app.models.extend('facebook',{
 	  'getFullname': ['GET', 'http://graph.facebook.com/{id}', function(result){
@@ -89,7 +90,7 @@ The main() function will be executed automatically as soon as the app is being e
 	
 Here, we're creating a new model named 'facebook' and specify one method called 'getFullname' which gets its data from via GET from the social graph using the parameter {id} of our controller. The optional function defines a data enrichment to post-process the data result. In this case, we are synthetically creating a new property 'fullname' using the first_ and last_name properties.
 
-5. And now, we're creating the view: Make a file 'welcomeView.html' in the right folder and paste the following lines:
+6. And now, we're creating the view: Make a file 'welcomeView.html' in the right folder and paste the following lines:
 	
 	´<h2>Hello World<*= (this.fullname!=null) ? ', '+this.fullname : '' *></h2>
 	<p>Click on the button below to get a personalized Welcome message.</p>
