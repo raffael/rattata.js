@@ -848,7 +848,6 @@ var app = {
 			}
 		}
 		
-		console.log("parsed string ",str,data);
 		return str;
 	},
 	

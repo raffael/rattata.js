@@ -17,7 +17,7 @@
 					coords = { x: 70, y: -35 }
 				} else {
 					console.log("Calibrating tuioJSON coordinates for windowed mode");
-					coords = { x: 65, y: 30 }
+					coords = { x: 78, y: 30 }
 				}
 				parserProxy.getParser().setOptions({
 					useCoordinateCalibration: true,
