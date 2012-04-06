@@ -179,12 +179,12 @@ var app = {
 						developerHandler= parameters;
 						parameters		= {};
 					}
-										
+					
 					$.ajax({
-						dataType: 	app.communicationType,
+						dataType: 	modelDefinition.dataType,
 						type:		modelDefinition.type,
 						data:		((modelDefinition.type!='GET') ? parameters : null), // TODO: if method==post, check if parameters is an object and stringify it
-						url:		app._parseString(modelDefinition.url,parameters),
+						url:		app._parseString(modelDefinition.url,parameters)+app.modelUrlSuffix,
 						success:	function(result){
 							if (modelDefinition.processor!=null) result = modelDefinition.processor(result);
 							developerHandler(result);
@@ -872,7 +872,6 @@ var app = {
 		} else {
 			result.url			= url;
 		}
-		result.url += app.modelUrlSuffix;
 		return result;
 	},
 	
@@ -884,14 +883,31 @@ var app = {
 	 * - using an array, two elements in array ('getTasks': ['GET http://.../', resultProcessorHandler(msg) ]
 	 * - using an object ('getTasks': {
 	 * 									url: 'http://.../',
+	 * 									dataType: 'json',
 	 * 									type: 'GET',
 	 * 									processor: resultProcessor
 	 * 									error: errorHandler
 	 * 									}
+	 * 
+	 * TODO (optional):
+	 * 	include postDataTranslation attribute to model definition.
+	 *  The Google Reader API, e.g., uses cryptic POST data attribute names like
+	 *  a=...&s=...&i=...
+	 *  (Where a means 'add tag' and can be replaced with 'r=...' which means 'remove tag')
+	 * 	so that an AJAX call would look like:
+	 * 	model({s: ..., a: ..., i: ...});
+	 * 
+	 *  >> If the developer has specified a postDataTranslation, like
+	 * 	postDataTemplate:	{a: 'action', s: 'feedId', i: 'identifier'}
+	 *  he can execute the AJAX call using his specified names instead of using the cryptic
+	 *  names:
+	 *  model({feedId: ..., action: ..., identifier: ...});
+	 * 
 	 */
 	_parseModelDefinition: function(definition) {
 		var defaults	= {
 			url:		null,
+			dataType:	app.communicationType,
 			processor:	function(ajaxResult) {
 				return ajaxResult;
 			},
