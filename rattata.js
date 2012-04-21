@@ -242,10 +242,13 @@ var app = {
 					/**
 					 * default HTTP types for the four methods in the right order:
 					 */
-					HTTPtypes	= ['PUT','GET','POST','DELETE'],
-					operations	= ['create','read','update','del'], // 'CRUD'
-					urls		= [core.create, core.read, core.update, core.del];
-				
+					HTTPtypes	= ['PUT',	'GET',	'POST',		'DELETE'],
+					operations	= ['create','read',	'update',	'del'],		 // 'CRUD'
+					definitions	= [core.create, core.read, core.update, core.del],
+					dataType	= ['json', 'json', 'json', 'json'],
+					urls		= ['','','',''],
+					processors	= [null,null,null,null];
+					
 				/**
 				 * At first, inject the initial data into the model, so that st. like * is
 				 * possible.
@@ -257,11 +260,13 @@ var app = {
 				 * check if the developer has overwritten the HTTP type using a prefix
 				 * on the url (e.g. 'GET api/todo/make')
 				 */
-				for(var url in urls) {
-					if (urls[url]) {
-						var parsingResult	= app._parseUrlDefinition(urls[url]);
-						HTTPtypes[url]		= parsingResult.httpType;
-						urls[url]			= parsingResult.url;
+				for(var def in definitions) {
+					if (definitions[def]) {
+						var modelDefinition	= app._parseModelDefinition(definitions[def]);
+						HTTPtypes[def]		= modelDefinition.type;
+						dataType[def]		= modelDefinition.dataType;
+						urls[def]			= modelDefinition.url;
+						processors[def]		= modelDefinition.processor;
 					}
 				}
 				
@@ -379,13 +384,14 @@ var app = {
 							 */
 							self[operation]	= function(additionalUrlParameters){
 								var data	= app.serializeData(HTTPtypes[index],self.extractData());
-								urls[index]	= app._parseString(urls[index],additionalUrlParameters);
+								urls[index]	= app._parseString(urls[index],additionalUrlParameters)+app.modelUrlSuffix;
 								$.ajax({
 									url:	urls[index],
 									type:	HTTPtypes[index],
 									data:	data,
-									dataType:app.communicationType,
+									dataType:dataType[index],
 									success:	function(result){
+										if (processors[index]!=null) result = processors[index](result);
 										/**
 										 * Instead of calling $.extend(this,result), we have to adapt
 										 * each attribute on its own to make it observable
@@ -565,7 +571,7 @@ var app = {
 				* Rebinds the UI elements of a view with the event handlers specified in this controller
 				* (this function will be called automatically everytime you render a view and show() it)
 				*/
-				rebindUi: function() {
+				rebindUi: function(optionalSpecificController) {
 					/**
 					 * Cycle through the attributes of the controller and process those that contain
 					 * a letterspace in their name, which indicates that they define an event-action
@@ -584,7 +590,8 @@ var app = {
 					 * 		'customEvent element': function(event,targetElement,customData){ ... }
 					 * 
 					 */
-					var controller = this;
+					var controller = (optionalSpecificController) ? optionalSpecificController : core;
+
 					for(var key in controller) {
 						if (key.indexOf(' ')==-1 || typeof controller[key]!='function') continue;
 						
