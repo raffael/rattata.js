@@ -180,19 +180,72 @@ var app = {
 						parameters		= {};
 					}
 					
-					$.ajax({
-						dataType: 	modelDefinition.dataType,
-						type:		modelDefinition.type,
-						data:		((modelDefinition.type!='GET') ? parameters : null), // TODO: if method==post, check if parameters is an object and stringify it
-						url:		app._parseString(modelDefinition.url,parameters)+app.modelUrlSuffix,
-						success:	function(result){
-							if (modelDefinition.processor!=null) result = modelDefinition.processor(result);
-							developerHandler(result);
-						},
-						error:		function(jqXHR, textStatus, errorThrown) {
-							modelDefinition.error(jqXHR, textStatus, errorThrown);
+					/**
+					 * if caching is enabled, first, try to read from local storage
+					 */
+					var workWithCache	= ("localStorage" in window) && (modelDefinition.type=='GET') && (modelDefinition.cache),
+						cacheEntryName	= escape(modelDefinition.url),
+						cachedEntry		= null,
+						cacheIsValid	= false;
+					
+					/**
+					 * Before handling cache or AJAX result, define the success handler
+					 */
+					var successHandler	= function(result, isCachedVersion){
+						/**
+						 * if cache is enabled for this request, store the result in the cache
+						 */
+						if (modelDefinition.type=='GET' && modelDefinition.cache) {
+							localStorage.setItem(cacheEntryName, JSON.stringify({
+								timestamp:	new Date()-0,
+								data:		result
+							}));
 						}
-					});
+						
+						/**
+						 * do the processing
+						 */
+						if (modelDefinition.processor!=null) result = modelDefinition.processor(result);
+						
+						/**
+						 * finally, call the developer callback
+						 */
+						developerHandler(result);
+					}
+					
+					/**
+					 * Now check whether we can read from localStorage cache
+					 */
+					if (workWithCache) {
+						/**
+						 * try to read from cache
+						 */
+						if (cachedEntry			= localStorage.getItem(cacheEntryName)) {
+							// read the JSONified object which contains a timestamp and the data at top-level
+							var cachedObject	= JSON.parse(cachedEntry);
+							// if the stored timestamp is still in the range of expiration, the entry is valid
+							cacheIsValid		= (new Date()-0) - cachedObject.timestamp < modelDefinition.expiration*60*60*1000;
+							if (cacheIsValid) {
+								successHandler(cachedObject.data, true);
+							}
+						}
+					} else {
+						/**
+						 * do the AJAX request
+						 */
+						$.ajax({
+							dataType: 	modelDefinition.dataType,
+							type:		modelDefinition.type,
+							data:		((modelDefinition.type!='GET') ? parameters : null), // TODO: if method==post, check if parameters is an object and stringify it
+							url:		app._parseString(modelDefinition.url,parameters)+app.modelUrlSuffix,
+							success:	function(result){
+								successHandler(result, false);
+							},
+							error:		function(jqXHR, textStatus, errorThrown) {
+								modelDefinition.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					}
 				}
 			})(i);
 			
@@ -893,8 +946,10 @@ var app = {
 	 * 									dataType: 'json',
 	 * 									type: 'GET',
 	 * 									processor: resultProcessor
-	 * 									error: errorHandler
-	 * 									}
+	 * 									error: errorHandler,
+	 * 									cache: false,		// if true, try to read from localStorage (only GET)
+	 * 									expiration: 24		// expiration in hours
+	 * 								  }
 	 * 
 	 * TODO (optional):
 	 * 	include postDataTranslation attribute to model definition.
@@ -912,27 +967,41 @@ var app = {
 	 * 
 	 */
 	_parseModelDefinition: function(definition) {
+		
 		var defaults	= {
-			url:		null,
-			dataType:	app.communicationType,
-			processor:	function(ajaxResult) {
+			url:		null,						// e.g. 'api.example.com/users.json'
+			type:		'GET',						// e.g. 'POST', 'GET', ...
+			cache:		false,						// e.g. true / false
+			expiration: 24,							// e.g. 24 == 24 hours until refresh
+			dataType:	app.communicationType,		// e.g. 'json'
+			processor:	function(ajaxResult) {		// any kind of data enrichments
 				return ajaxResult;
 			},
 			error:		function(a,b,c) {
 				app.defaultCommunicationErrorHandler(a,b,c);
 			},
-			type:		'GET'
 		};
 		
+		/**
+		 * developer is only defining the URL, nothing else
+		 */
 		if (typeof definition=='string') {
 			var parsed	= app._parseUrlDefinition(definition);
 			defaults.type		= parsed.httpMethod;
 			defaults.url		= parsed.url;
+			
+		/**
+		 * developer is defining via an array that may contain URL, httpMethod and processor
+		 */
 		} else if($.isArray(definition)) {
 			var parsed	= app._parseUrlDefinition(definition[0]);
 			defaults.type		= parsed.httpMethod;
 			defaults.url		= parsed.url;
 			defaults.processor	= (definition[1]!=undefined) ? definition[1] : defaults.processor;
+			
+		/**
+		 * developer is defining via an property object
+		 */
 		} else if (typeof definition =='object'){
 			$.extend(defaults,definition);
 		}
