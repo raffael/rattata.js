@@ -84,9 +84,9 @@ Rattata.js automatically transforms both of the two ways to define a model metho
 		console.log(processedResult)
 	});
 
-Of course, since the model is just a normal JavaScript object, you can define own methods or own properties:
+Since the model is just a normal JavaScript object, you can of course define own methods, that do not rely on AJAX or own properties:
 	app.models.define('userModel',{
-		[...],
+		[… AJAX request definitions …],
 		parseUnixTimestamp: function(timestamp){[...]}
 	});
 
@@ -102,6 +102,25 @@ In your controllers, you can make a method call with input parameters like this:
 The two attributes of your *input data object* will be injected into the AJAX URL.
 
 That is the way, basic Rattata.js models work. These models act more like container for AJAX calls. You can split all your AJAX calls of your app into classes like models, e.g. the 'userModel', the 'toDoListModel' model and so on.
+
+## AJAX result caching
+
+You can enable AJAX GET request caching simply by adding a positive *cache* flag attribute to your model definition. Via an optional attribute *expiration* you can define how many hours a cached entry is valid. For caching data, the *localStorage* object is being used, which has been introduced with HTML5. If the executing browser does not support localStorage, the AJAX request will be triggered directly. As cache identifier key, the AJAX request URI itself is being used.
+Only the pure and raw AJAX result will be stored. Any kind of processor, that has been defined for the model, will be executed on both the cached and AJAX requested result.
+The following code snippet illustrates the usage:
+
+	app.models.define('userModel',{
+		getUncriticalData:	{
+			type:		'GET',
+			cache:	true,
+			expiration: 48,		// entry will be valid for 48 hours
+			url:		'http://api.yourAppName.com/get/user/{id}',
+			processor:	function(userAjaxResult) {
+				// will be executed on the cached object, too:
+				userAjaxResult.lastLogin = new Date();
+			}
+		}
+	});
 
 ## Defining observed models ##
 Rattata.js also provides more advanced models, that provide enhanced functionality like observed attributes and CRUD principle implementation. Observed models can be instantiated, so they act like classes in OOP. The observed model objects are a local representation of the data records on your server's database and tend to be used using the CRUD principle (Create, Read, Update and Delete).
