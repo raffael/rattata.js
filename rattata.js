@@ -84,7 +84,7 @@ var app = {
 	/**
 	 * How do you want your data to be serialized when transmitted to the server?
 	 */
-	serializeData: function(HTTPtype, dataObject) {
+	serializeData: function(HTTPType, dataObject) {
 		return $.param(dataObject,false);
 	},
 	
@@ -187,7 +187,7 @@ var app = {
 						cacheEntryName	= escape(modelDefinition.url),
 						cachedEntry		= null,
 						cacheIsValid	= false;
-					
+										
 					/**
 					 * Before handling cache or AJAX result, define the success handler
 					 */
@@ -195,7 +195,8 @@ var app = {
 						/**
 						 * if cache is enabled for this request, store the result in the cache
 						 */
-						if (modelDefinition.type=='GET' && modelDefinition.cache) {
+						if (workWithCache && !isCachedVersion) {
+							LOG("Store AJAX result for "+cacheEntryName+"in cache");
 							localStorage.setItem(cacheEntryName, JSON.stringify({
 								timestamp:	new Date()-0,
 								data:		result
@@ -226,26 +227,29 @@ var app = {
 							// if the stored timestamp is still in the range of expiration, the entry is valid
 							cacheIsValid		= (new Date()-0) - cachedObject.timestamp < modelDefinition.expiration*60*60*1000;
 							if (cacheIsValid) {
+								LOG("Read AJAX result for model '"+name+"' (method name '"+methodName+"') from cache");
 								successHandler(cachedObject.data, true);
+								
+								return;		// so that the AJAX won't be triggered
 							}
 						}
-					} else {
-						/**
-						 * do the AJAX request
-						 */
-						$.ajax({
-							dataType: 	modelDefinition.dataType,
-							type:		modelDefinition.type,
-							data:		((modelDefinition.type!='GET') ? parameters : null), // TODO: if method==post, check if parameters is an object and stringify it
-							url:		app._parseString(modelDefinition.url,parameters)+app.modelUrlSuffix,
-							success:	function(result){
-								successHandler(result, false);
-							},
-							error:		function(jqXHR, textStatus, errorThrown) {
-								modelDefinition.error(jqXHR, textStatus, errorThrown);
-							}
-						});
 					}
+				
+					/**
+					 * do the AJAX request (only if cache has not been read or is invalid)
+					 */
+					$.ajax({
+						dataType: 	modelDefinition.dataType,
+						type:		modelDefinition.type,
+						data:		((modelDefinition.type!='GET') ? parameters : null), // TODO: if method==post, check if parameters is an object and stringify it
+						url:		app._parseString(modelDefinition.url,parameters)+app.modelUrlSuffix,
+						success:	function(result){
+							successHandler(result, false);
+						},
+						error:		function(jqXHR, textStatus, errorThrown) {
+							modelDefinition.error(jqXHR, textStatus, errorThrown);
+						}
+					});
 				}
 			})(i);
 			
@@ -295,12 +299,14 @@ var app = {
 					/**
 					 * default HTTP types for the four methods in the right order:
 					 */
-					HTTPtypes	= ['PUT',	'GET',	'POST',		'DELETE'],
+					HTTPTypes	= ['PUT',	'GET',	'POST',		'DELETE'],
 					operations	= ['create','read',	'update',	'del'],		 // 'CRUD'
 					definitions	= [core.create, core.read, core.update, core.del],
-					dataType	= ['json', 'json', 'json', 'json'],
+					dataTypes	= ['json', 'json', 'json', 'json'],
 					urls		= ['','','',''],
-					processors	= [null,null,null,null];
+					processors	= [null,null,null,null],
+					cacheFlags	= [false,false,false,false],
+					expirations	= [24,24,24,24];
 					
 				/**
 				 * At first, inject the initial data into the model, so that st. like * is
@@ -316,10 +322,12 @@ var app = {
 				for(var def in definitions) {
 					if (definitions[def]) {
 						var modelDefinition	= app._parseModelDefinition(definitions[def]);
-						HTTPtypes[def]		= modelDefinition.type;
-						dataType[def]		= modelDefinition.dataType;
+						HTTPTypes[def]		= modelDefinition.type;
+						dataTypes[def]		= modelDefinition.dataType;
 						urls[def]			= modelDefinition.url;
 						processors[def]		= modelDefinition.processor;
+						cacheFlags[def]		= modelDefinition.cache;
+						expirations[def]	= modelDefinition.expiration;
 					}
 				}
 				
@@ -424,6 +432,46 @@ var app = {
 						} else {
 						
 							/**
+							 * if caching is enabled, first, try to read from local storage
+							 */
+							var workWithCache	= ("localStorage" in window) && (HTTPTypes[index]=='GET') && (cacheFlags[index]),
+								cacheEntryName	= escape(urls[index]),
+								cachedEntry		= null,
+								cacheIsValid	= false;
+							
+							/**
+							 * the success handler contains logic to store the result in the cache
+							 */
+							var successHandler = function(result, isCachedVersion){
+								/**
+								 * if cache is enabled for this request, store the result in the cache
+								 */
+								if (workWithCache && !isCachedVersion) {
+									LOG("Store AJAX result in cache for model '"+name+"', operation '"+operation+"'");
+									localStorage.setItem(cacheEntryName, JSON.stringify({
+										timestamp:	new Date()-0,
+										data:		result
+									}));
+								}
+								
+								if (processors[index]!=null) result = processors[index](result);
+								/**
+								 * Now after receiving the result, we have to inject the
+								 * data into the model object.
+								 * Instead of calling $.extend(this,result), we have to adapt
+								 * each attribute on its own to make it observable
+								 * TODO: check if result is an numeric array ?!
+								 * 		 (if server responds st. like "['a','b','c']", the attr
+								 * 		  in the following code are numbers, so that addProperty
+								 * 		  will probably fail!)
+								 */
+								for(var attr in result) {
+									self.addProperty(attr, result[attr]);
+								}
+								self.updateHandler();
+							}
+							
+							/**
 							 * define the function itself so that it is available on the model object,
 							 * e.g. model.read(); or model.update();
 							 * Calling on of these four method will sync the local data with the one
@@ -436,27 +484,35 @@ var app = {
 							 * and originates from the model object itself.
 							 */
 							self[operation]	= function(additionalUrlParameters){
-								var data	= app.serializeData(HTTPtypes[index],self.extractData());
+								
+								if (workWithCache) {
+								// try to read from cache
+									
+									if (cachedEntry			= localStorage.getItem(cacheEntryName)) {
+										// read the JSONified object which contains a timestamp and the data at top-level
+										var cachedObject	= JSON.parse(cachedEntry);
+										// if the stored timestamp is still in the range of expiration, the entry is valid
+										cacheIsValid		= (new Date()-0) - cachedObject.timestamp < modelDefinition.expiration*60*60*1000;
+										if (cacheIsValid) {
+											LOG("Read AJAX result for observed model '"+name+"' (operation name '"+operation+"') from cache",cachedObject.data);
+											successHandler(cachedObject.data, true);
+											
+											return; // so that the AJAX request won't be triggered
+										}
+									}
+									
+								}
+
+								// do AJAX request
+								var data	= app.serializeData(HTTPTypes[index],self.extractData());
 								urls[index]	= app._parseString(urls[index],additionalUrlParameters)+app.modelUrlSuffix;
 								$.ajax({
 									url:	urls[index],
-									type:	HTTPtypes[index],
+									type:	HTTPTypes[index],
 									data:	data,
-									dataType:dataType[index],
+									dataType:dataTypes[index],
 									success:	function(result){
-										if (processors[index]!=null) result = processors[index](result);
-										/**
-										 * Instead of calling $.extend(this,result), we have to adapt
-										 * each attribute on its own to make it observable
-										 * TODO: check if result is an numeric array ?!
-										 * 		 (if server responds st. like "['a','b','c']", the attr
-										 * 		  in the following code are numbers, so that addProperty
-										 * 		  will probably fail!)
-										 */
-										for(var attr in result) {
-											self.addProperty(attr, result[attr]);
-										}
-										self.updateHandler();
+										successHandler(result, false);
 									},
 									error:		function(a,b,c){
 										self.errorHandler(a,b,c);
