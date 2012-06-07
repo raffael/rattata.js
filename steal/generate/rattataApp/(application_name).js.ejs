@@ -1,0 +1,24 @@
+/**
+ * let's create a simple AppMvc based web application:
+ * To do so, steal the AppMvc framework from the /rattata folder.
+ * Next, specify your app settings.
+ * At the end, build the app based on your settings and run.
+ */
+steal( '../rattata/rattata' ).then(function(){
+	
+	var myAppConfig = {
+		usage:			'dev',
+		baseUri:		'<%= application_name %>app.com',
+		language: 		'en',
+		dependencies:	['css/<%= application_name %>'], // all sort of files like css, js, coffee, less, ...
+		languages:		['en'],
+		models:			['sampleModel'],
+		views:			['sampleView'],
+		controllers:	['sampleController'],
+		skeleton:		'#app'
+	}
+
+	app.ready(myAppConfig,function(){
+		$('#loading').fadeOut(500,function(){$('#loading').remove();});
+	});
+});

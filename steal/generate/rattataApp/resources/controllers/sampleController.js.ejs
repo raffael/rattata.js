@@ -1,0 +1,28 @@
+/**
+ * This files shows you how to set up a new controller.
+ */
+app.controllers.define('sampleController', {
+
+	// optional: if set to true, this controller will run by default
+	isMainController: true,
+	
+	// main functions will be called as soon as the controller is being executed via run()
+	main: function(){
+		
+		// load data from a model and render it
+		app.models.sampleModel.getTasks({maxItems: 3},function(result){
+			// render the view and show it (implement a switchter and pass it to the show()
+			// method if you want any special switch behaviour)
+			app.views.sampleView.render(result).show();
+			
+			// next possible steps: activate the next controller
+			// app.controllers.list.activate();
+		});
+	},
+	
+	// UI binding:
+	// If the user CLICKs on an element '.ui-list', another controller will be activated
+	'click list': function(){
+		app.controllers.list.activate();
+	},
+});

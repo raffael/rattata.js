@@ -1,0 +1,28 @@
+/**
+ * This file shows you how to set up a new model with multiple methods.
+ * rattata supports two ways to define a model method. Every method can
+ * be executed with a set of parameters. Provide the parameters using a
+ * JS object:
+ * 
+ *		app.models.sampleModel.getFullname({id:'rhcreativity'}, function(result){
+ *			app.views.listView.render(result).show();
+ *		});
+ */
+app.models.define('sampleModel', {
+	/**
+	 * simpel model syntax:
+	 * 'methodName': 'URI_WITH_PARAMS'
+	 */
+	'getTasks': '/api/tasks/get/maxItems/{maxItems}/',
+	'getSomeDataLocally': 'myAppDemoModel.json',
+	
+	/**
+	 * extended model syntax:
+	 * 'methodName': ['HTTP_METHOD','URI_WITH_PARAMS',processDataHandler] 
+	 */
+	'getFullname': ['GET', 'http://graph.facebook.com/{id}', function(result){
+		// enrich the incoming data and return the processed result
+		result.fullname = result.first_name + ' ' + result.last_name;
+		return result;
+	}],
+});

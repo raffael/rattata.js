@@ -1,0 +1,11 @@
+<!-- This file shows you how to set up a view -->
+<!-- All the views are stored using the filename in the the app.views array -->
+
+<ul class="scrollable-list">
+	<* for (var i=0;i<this['list'].length;i++) { *>
+		<li>
+			<input type="checkbox" id="task_<*= i *>">
+			<label for="task_<*= i *>"><*= this.list[i].title *></label>
+		</li>
+	<* } *>
+</ul>

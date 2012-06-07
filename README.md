@@ -6,11 +6,29 @@ It's a rough MVC architecture built in JavaScript for your upcoming web app.
 Rattata.js is still under development. Feel free to contribute and share your thoughts.
 
 ## So let's start — how do I begin writing an app?
-Since Rattata.js uses stealJS as resource mananager, structure templates to generate the foundation files are available as well.
+Since Rattata.js uses stealJS as resource mananager. Since stealJS supports folder structure templates, a Rattata.js template to generate the foundation file for a Rattata.js based application is part of the rep as well.
 
-0. Download Navigate to the stealJS folder of the Rattata.js download using the Terminal.
-1. Run **./js steal/generate/rattataApp MyFirstApp**.A folder *MyFirstApp* will be created automatically with some demo controllers, models and views.
-3. Open *MyFirstApp.js* to start extending the foundation.
+Before doing anything, be sure to set up the right folder hierachy. Rattata.js depends on the following libs you need to download before starting developing apps. They are not part of the Rattata.js download, so please download them manually:
+
+- steal (https://github.com/jupiterjs/steal)
+- jQote2 (https://github.com/aefxx/jQote2)
+- jQuery (https://github.com/jquery/jquery)
+
+Download them and create the following structure:
+
+	/steal
+		/steal.js (and other stealJS files)
+	/rattata
+		/rattata.js
+		/plugins
+		/jquery.js
+		/jquery.jqote2.min.js
+
+Now you can start by generating a foundation for your app:
+
+0. Navigate to your steal folder using the Terminal.
+1. Run **./js steal/generate/rattataApp MyFirstApp**. A folder named *MyFirstApp* will be created automatically next to */steal* and */rattata* that contains some demo controllers, models and views.
+3. Open *MyFirstApp/yFirstApp.js* and start extending the foundation.
 
 ## The longer version of creating an app
 Let's have a look at the manual way of instantiating a new Rattata.js based application.

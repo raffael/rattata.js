@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title><%= application_name %> App</title>
+	</head>
+	<body>
+		<!-- The #loading DIV can be an overlay that automatically will be hidden as soon as the app has finished loading -->
+		<div id="loading"></div>
+		<!-- The #app DIV will contain rendered templates (check the config 'selector') -->
+        <div id="app"></div>
+		<script src="<%= path_to_steal %>/steal/steal.js?<%= path %>/<%= application_name %>.js"></script>
+	</body>
+</html>
