@@ -6,7 +6,7 @@ It's a rough MVC architecture built in JavaScript for your upcoming web app.
 Rattata.js is still under development. Feel free to contribute and share your thoughts.
 
 ## So let's start — how do I begin writing an app?
-Since Rattata.js uses stealJS as resource mananager. Since stealJS supports folder structure templates, a Rattata.js template to generate the foundation file for a Rattata.js based application is part of the rep as well.
+Since Rattata.js uses stealJS as resource mananager and stealJS supports folder structure templates to rapidly instantiate oftenly used folder structures, a Rattata.js template to generate the foundation file for a Rattata.js based application is part of the rep as well.
 
 Before doing anything, be sure to set up the right folder hierachy. Rattata.js depends on the following libs you need to download before starting developing apps. They are not part of the Rattata.js download, so please download them manually:
 
