@@ -1,3 +1,4 @@
+
 03.06.2012
 * Introduced the support for caching AJAX results (GET only) in localStorage. Simply add both the entries 'cache: true' and 'expiration: 24' to your model description (not obersevedModels yet!) to enable the caching. The expiration number is the number of hours until which the cached entry expires. The framework automatically will test for localStorage support in the browser. If the feature is not supported, the AJAX request will be triggered directly.
 
